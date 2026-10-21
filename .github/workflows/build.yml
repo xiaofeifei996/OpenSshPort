@@ -56,7 +56,7 @@ jobs:
           set -euo pipefail
           chmod +x layout/DEBIAN/postinst layout/DEBIAN/postrm
           make clean
-          make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=roothide 2>&1 | tee build.log
+          make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless 2>&1 | tee build.log
           test -n "$(ls packages/*.deb 2>/dev/null)" || { echo "::error::no deb produced"; exit 1; }
           shasum -a 256 packages/*.deb | tee SHA256SUMS
 
@@ -67,7 +67,9 @@ jobs:
           echo "== control =="
           dpkg-deb -I "$deb"
           echo "== files =="
-          dpkg-deb -c "$deb"
+          dpkg-deb -c "$deb" > /tmp/deb-list.txt
+          cat /tmp/deb-list.txt
+          grep -q 'var/jb/Library/PreferenceBundles/OpenSshPort.bundle' /tmp/deb-list.txt
           tmpd=$(mktemp -d)
           dpkg-deb -x "$deb" "$tmpd"
           find "$tmpd" -path '*OpenSshPort*'
