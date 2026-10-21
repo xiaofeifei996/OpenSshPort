@@ -1,4 +1,5 @@
-export TARGET = iphone:clang:11.0:11.0
+# use latest available SDK from theos instead of pinning 11.0 (which may not be installed in CI)
+export TARGET = iphone:clang:latest:11.0
 export ARCHS = arm64 arm64e
 #messages=yes
 
