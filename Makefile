@@ -57,6 +57,12 @@ before-package::
 endif
 endif
 
+# RootHide loads rootless packages from /var/jb/*; keep that layout but with
+# the arm64e package architecture.
+ifeq ($(THEOS_PACKAGE_SCHEME),rootless)
+THEOS_PACKAGE_ARCH = iphoneos-arm64e
+endif
+
 before-stage::
 	$(ECHO_NOTHING)sed -e 's/Architecture: iphoneos-arm.*/Architecture: $(THEOS_PACKAGE_ARCH)/' "$(THEOS_PROJECT_DIR)/control" > "$(THEOS_PROJECT_DIR)/control-$(THEOS_PACKAGE_SCHEME)"$(ECHO_END)
 
