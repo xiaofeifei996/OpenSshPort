@@ -1,0 +1,12 @@
+Package: u.blanxd.opensshport
+Author: BlanxdH <blanxd.h@gmail.com>
+Name: OpenSSH Settings (中文汉化版)
+Depends: cy+cpu.arm64 | firmware (>= 11), openssh-server | openssh, preferenceloader, u.blanxd.sshswitch
+Breaks: u.blanxd.sshoncc (<= 1.4.0)
+Replaces: u.blanxd.sshoncc (<= 1.4.0)
+Section: Security
+Version: 1.1.0
+Architecture: iphoneos-arm64e
+Description: 设置中的 OpenSSH 管理界面（roothide 中文汉化版）
+Maintainer: xiaofeifei996 <xiaofeifei996@users.noreply.github.com>
+dev: blanxd
