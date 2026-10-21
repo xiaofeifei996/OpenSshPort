@@ -1,0 +1,23 @@
+#!/bin/sh
+
+killall -HUP Preferences >/dev/null 2>&1
+[ $? -lt 2 ] || { # no shell-cmds installed?
+	_prfs=$(ps axo pid,command 2>/dev/null | grep '/Preferences.app/Preferences' 2>/dev/null | grep -v grep 2>/dev/null)
+	[ $? -lt 3 ] || { # no grep installed?
+		echo 
+		echo "Please make sure the Settings app gets restarted (or SpringBoard)."
+		echo "(If it was active, just close it from the App Switcher)"
+		echo 
+		exit 0
+	}
+	[ -z "${_prfs}" ] || {
+		while read _prp _tmp; do
+			kill -HUP ${_prp} 2>/dev/null
+			break
+		done <<-EOT
+			${_prfs}
+		EOT
+	}
+}
+
+exit 0
