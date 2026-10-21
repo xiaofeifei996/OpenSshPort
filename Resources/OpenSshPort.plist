@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>items</key>
+	<array>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>OpenSSH 配置</string>
+			<key>footerText</key>
+			<string>允许的端口为 22 或 1001–65535。可填写多个端口（最多 8 个），以英文逗号分隔。服务器运行中修改可能导致其重启。（注意：OpenSSH 升级或重装后，这些设置可能会被重置）</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>label</key>
+			<string>SSH 开关（总开关）</string>
+			<key>defaults</key>
+			<string>u.blanxd.opensshport</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>label</key>
+			<string>允许 root 登录</string>
+			<key>defaults</key>
+			<string>u.blanxd.opensshport</string>
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>OpenSshSubtitleSwitchCell</string>
+			<key>label</key>
+			<string>要求密码</string>
+			<key>defaults</key>
+			<string>u.blanxd.opensshport</string>
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>OpenSshSubtitleSwitchCell</string>
+			<key>label</key>
+			<string>要求密钥</string>
+			<key>defaults</key>
+			<string>u.blanxd.opensshport</string>
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>OpenSshSubtitleSwitchCell</string>
+			<key>label</key>
+			<string>仅限本机连接</string>
+			<key>enabled</key>
+			<true/>
+			<key>defaults</key>
+			<string>u.blanxd.opensshport</string>
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>OpenSshPortCell</string>
+			<key>label</key>
+			<string>SSH 端口</string>
+			<key>keyboard</key>
+			<string>numbers</string>
+			<key>defaults</key>
+			<string>u.blanxd.opensshport</string>
+		</dict>
+
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>设备启动时（重启/重新越狱后）</string>
+			<key>footerText</key>
+			<string>这些选项决定本插件如何启动/停止 SSH 服务器。若越狱工具本身在激活时强制启动服务，这些选项可能不生效。服务器运行中修改可能导致其重启。</string> 
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>OpenSshSubtitleSwitchCell</string>
+			<key>label</key>
+			<string>记住上次状态</string>
+			<key>defaults</key>
+			<string>u.blanxd.opensshport</string>
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>OpenSshSubtitleSwitchCell</string>
+			<key>label</key>
+			<string>默认启动 SSH 服务器</string>
+			<key>enabled</key>
+			<true/>
+			<key>defaults</key>
+			<string>u.blanxd.opensshport</string>
+		</dict>
+
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>活动会话</string>
+			<key>footerText</key>
+			<string>开启后，通过开关插件或本页面关闭 SSH 服务器时，活动的 ssh/scp/sftp 会话不会被强制断开。</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>label</key>
+			<string>保留活动会话</string>
+			<key>defaults</key>
+			<string>u.blanxd.opensshport</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>开关插件</string>
+			<key>footerText</key>
+			<string>开启后，即使设备已锁定，开关插件（控制中心或其他）仍可正常切换。</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>label</key>
+			<string>锁定时允许切换</string>
+			<key>defaults</key>
+			<string>u.blanxd.opensshport</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerAlignment</key>
+			<integer>1</integer>
+			<key>footerText</key>
+			<string>. . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+本页面是命令行 setuid 工具 "SSHswitch" 的图形界面（详见 SSHswitch -h）</string>
+		</dict>	
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>footerAlignment</key>
+			<integer>1</integer>
+			<key>footerText</key>
+			<string> © 2023 Blanxd.H (/u/blanxd) · 中文汉化版</string>
+		</dict>
+	</array>
+	<key>title</key>
+	<string>OpenSSH</string>
+</dict>
+</plist>
