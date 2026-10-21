@@ -72,7 +72,14 @@ jobs:
           dpkg-deb -x "$deb" "$tmpd"
           find "$tmpd" -path '*OpenSshPort*'
           binp=$(find "$tmpd" -name 'OpenSshPort' -type f | grep -v '\.plist' | head -1)
-          grep -aq "踢出所有会话" "$binp" && echo "CN strings OK" || { echo "::error::CN strings missing"; exit 1; }
+          python3 - "$binp" <<'PY'
+import sys
+data = open(sys.argv[1], "rb").read()
+text = "踢出所有会话"
+ok = text.encode("utf-16-le") in data or text.encode("utf-8") in data
+print("CN strings OK" if ok else "CN strings missing (utf-16le/utf-8 both absent)")
+sys.exit(0 if ok else 1)
+PY
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
