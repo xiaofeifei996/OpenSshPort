@@ -1,0 +1,93 @@
+name: Build roothide 汉化版
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: roothide-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 40
+    env:
+      THEOS_REV: cfba89a53a05b4a1b822121158acc3669c20602f
+      SDK_REV: 0222fd5413cf4b9af096f37b4621afa2688572f7
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: |
+          brew install make dpkg ldid
+          echo "$(brew --prefix make)/libexec/gnubin" >> "$GITHUB_PATH"
+
+      - name: Setup native RootHide Theos and iOS SDK
+        run: |
+          set -euo pipefail
+          dest="$RUNNER_TEMP/rh-theos"
+          git init "$dest"
+          git -C "$dest" remote add origin https://github.com/roothide/theos.git
+          git -C "$dest" fetch --depth=1 origin "$THEOS_REV"
+          git -C "$dest" checkout --detach FETCH_HEAD
+          git -C "$dest" submodule update --init --recursive --depth=1
+          sdk="$RUNNER_TEMP/rh-sdks"
+          git init "$sdk"
+          git -C "$sdk" remote add origin https://github.com/theos/sdks.git
+          git -C "$sdk" fetch --depth=1 origin "$SDK_REV"
+          git -C "$sdk" checkout --detach FETCH_HEAD
+          test -d "$sdk/iPhoneOS15.6.sdk"
+          test -f "$sdk/iPhoneOS15.6.sdk/System/Library/PrivateFrameworks/Preferences.framework/Preferences.tbd"
+          cp -R "$sdk/iPhoneOS15.6.sdk" "$dest/sdks/"
+          test -f "$dest/vendor/mod/roothide/package/deb.mk"
+          test -f "$dest/vendor/include/roothide.h"
+          test -f "$dest/vendor/lib/iphone/roothide/libroothide.tbd"
+          echo "THEOS=$dest" >> "$GITHUB_ENV"
+          git -C "$dest" rev-parse HEAD
+
+      - name: Build roothide deb (汉化版)
+        run: |
+          set -euo pipefail
+          make clean
+          make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=roothide 2>&1 | tee build.log
+          test -n "$(ls packages/*.deb 2>/dev/null)" || { echo "::error::no deb produced"; exit 1; }
+          shasum -a 256 packages/*.deb | tee SHA256SUMS
+
+      - name: Verify deb layout and 汉化 strings
+        run: |
+          set -euo pipefail
+          deb=$(ls packages/*.deb | head -1)
+          echo "== control =="
+          dpkg-deb -I "$deb"
+          echo "== files =="
+          dpkg-deb -c "$deb"
+          tmpd=$(mktemp -d)
+          dpkg-deb -x "$deb" "$tmpd"
+          find "$tmpd" -path '*OpenSshPort*'
+          binp=$(find "$tmpd" -name 'OpenSshPort' -type f | grep -v '\.plist' | head -1)
+          grep -aq "踢出所有会话" "$binp" && echo "CN strings OK" || { echo "::error::CN strings missing"; exit 1; }
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenSshPort-roothide-${{ github.run_number }}
+          path: |
+            packages/*.deb
+            SHA256SUMS
+            build.log
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="roothide-${GITHUB_RUN_NUMBER}"
+          gh release create "$tag" --title "OpenSshPort roothide 汉化版 #${GITHUB_RUN_NUMBER}" --notes "自动构建 · OpenSSH Settings roothide 中文汉化版（架构 iphoneos-arm64e）" packages/*.deb SHA256SUMS build.log
