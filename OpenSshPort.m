@@ -280,6 +280,10 @@ bhLogOSP(@"switch_onoff (%d) %s %s %s %s %s %s %s", older, args[1], args[2], arg
 
 #pragma mark end static functions, start iOS>=14 stuff while using iOS11 SDK
 
+/* only declare these when building against an SDK older than iOS 14;
+   newer SDKs already declare them in UIKit, and -Werror fails on duplicates */
+#if !defined(__IPHONE_14_0) || (__IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_14_0)
+
 @protocol UIContentConfiguration <NSObject,NSCopying>
 @required
 -(id)makeContentView;
@@ -295,6 +299,8 @@ bhLogOSP(@"switch_onoff (%d) %s %s %s %s %s %s %s", older, args[1], args[2], arg
 -(id<UIContentConfiguration>)contentConfiguration;
 -(void)setContentConfiguration:(id<UIContentConfiguration>)arg1 ;
 @end
+
+#endif /* SDK < iOS 14 */
 
 #pragma mark end iOS>=14 stuff while using iOS11 SDK, start interfaces
 
