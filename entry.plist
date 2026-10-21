@@ -1,10 +1,21 @@
-{
-    entry = {
-		bundle = OpenSshPort;
-		cell = PSLinkCell;
-		detail = OpenSshPortController;
-		icon = OpenSshPort.png;
-		isController = 1;
-		label = OpenSSH 设置;
-    };
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>entry</key>
+	<dict>
+		<key>bundle</key>
+		<string>OpenSshPort</string>
+		<key>cell</key>
+		<string>PSLinkCell</string>
+		<key>detail</key>
+		<string>OpenSshPortController</string>
+		<key>icon</key>
+		<string>OpenSshPort.png</string>
+		<key>isController</key>
+		<integer>1</integer>
+		<key>label</key>
+		<string>OpenSSH 设置</string>
+	</dict>
+</dict>
+</plist>
