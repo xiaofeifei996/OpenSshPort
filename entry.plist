@@ -1,0 +1,10 @@
+{
+    entry = {
+		bundle = OpenSshPort;
+		cell = PSLinkCell;
+		detail = OpenSshPortController;
+		icon = OpenSshPort.png;
+		isController = 1;
+		label = OpenSSH 设置;
+    };
+}
