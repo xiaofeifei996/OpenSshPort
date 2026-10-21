@@ -1,5 +1,6 @@
-# use latest available SDK from theos instead of pinning 11.0 (which may not be installed in CI)
-export TARGET = iphone:clang:latest:11.0
+# CI installs iPhoneOS15.6.sdk from theos/sdks; pin it so SYSROOT resolves and
+# the private-framework search path (-F .../PrivateFrameworks) is added.
+export TARGET = iphone:clang:15.6:11.0
 export ARCHS = arm64 arm64e
 #messages=yes
 
