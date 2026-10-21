@@ -18,6 +18,7 @@
 static const char * const fp_ssw = "SSHswitch";
 static const char * const jbroot = "/var/jb"; // fallback root directory path.
 static const char * fp_sss = NULL;
+static NSArray * s_switchCands = nil; // probe results, kept for the version fallback
 
 static uint8_t openSshPortAllowedPorts = 8;
 static unsigned long openSshPortHasPorts = 0; // port count -1. For if we come from an earlier version which didn't have the limits
@@ -440,19 +441,45 @@ static NSMutableAttributedString* _errTxtLnks;
 	char * usr = "usr";
 	char * bin = "bin";
 	// without the prefix
-	_sswitch = [NSString stringWithFormat:@"/%s/%s/%s", usr, bin, fp_ssw]; // rooted
-	if ( !osp_file_exist([_sswitch UTF8String]) ){
-		_sswitch = [NSString stringWithFormat:@"%s%@", jbroot, _sswitch]; // simple /var/jb
-		if ( !osp_file_exist([_sswitch UTF8String]) ){
-			NSString * envJbRoot = [[[NSProcessInfo processInfo] environment] objectForKey:@"JB_ROOT_PATH"];
-			if ( envJbRoot ){
-				_sswitch = [NSString stringWithFormat:@"%@/%s/%s/%s", envJbRoot, usr, bin, fp_ssw];
-			} // else now we're f*d, this isn't going to work
+	// Candidate paths, most likely first. Rootless (/var/jb) packages are what
+	// RootHide app processes can actually see; the roothide scheme drops files
+	// into the hidden root, where settings/CC cannot reach them.
+	NSMutableArray * cands = [NSMutableArray array];
+	NSString * envJbRoot = [[[NSProcessInfo processInfo] environment] objectForKey:@"JB_ROOT_PATH"];
+	if ( envJbRoot.length )
+		[cands addObject:[NSString stringWithFormat:@"%@/%s/%s/%s", envJbRoot, usr, bin, fp_ssw]];
+	[cands addObject:[NSString stringWithFormat:@"%s/%s/%s/%s", jbroot, usr, bin, fp_ssw]]; // /var/jb
+	[cands addObject:[NSString stringWithFormat:@"/%s/%s/%s", usr, bin, fp_ssw]];           // rootful
+
+	_sswitch = nil;
+	for ( NSString * cand in cands ){
+		if ( osp_file_exist([cand UTF8String]) ){
+			_sswitch = cand;
+			break;
 		}
 	}
+	s_switchCands = [cands copy];
+	if ( _sswitch == nil )
+		_sswitch = [cands lastObject];
 	fp_sss = [_sswitch UTF8String];
 	// 1.1.0: need to know the version before determining the other stuff, and definitely before it calls specifiers()
 	[self readSssPrefs];
+
+	// a stale/reachable-but-broken SSHswitch (e.g. left behind in the hidden
+	// root) makes every toggle silently fail; only trust a binary that can
+	// actually report its version, otherwise walk the other candidates.
+	if ( _sssVersion < 10000 ){
+		for ( NSString * cand in s_switchCands ){
+			if ( [cand isEqualToString:_sswitch] || !osp_file_exist([cand UTF8String]) )
+				continue;
+			_sswitch = cand;
+			fp_sss = [_sswitch UTF8String];
+			[self readSssPrefs];
+			if ( _sssVersion >= 10000 )
+				break;
+		}
+		s_switchCands = nil;
+	}
 
 #if ALPHABETA
 bhLogOSP(@"init switch path:%s ver:%d", fp_sss, _sssVersion); //// debug
