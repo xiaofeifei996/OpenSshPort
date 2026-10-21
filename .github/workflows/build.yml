@@ -54,6 +54,7 @@ jobs:
       - name: Build roothide deb (汉化版)
         run: |
           set -euo pipefail
+          chmod +x layout/DEBIAN/postinst layout/DEBIAN/postrm
           make clean
           make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=roothide 2>&1 | tee build.log
           test -n "$(ls packages/*.deb 2>/dev/null)" || { echo "::error::no deb produced"; exit 1; }
